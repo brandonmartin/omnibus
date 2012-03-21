@@ -17,8 +17,22 @@
 ;; limitations under the License.
 ;;
 
+(let [args (cond
+            (and (is-os? "freebsd") (or (is-platform-version-like? "10") (is-platform-version-like? "9")))
+             ["--prefix=/opt/opscode/embedded"
+              "--with-pic"]
+            true
+             ["--prefix=/opt/opscode/embedded"])
+     ]
+
 (software "gdbm" :source "gdbm-1.8.3"
-          :steps [{:command "/opt/opscode/embedded/bin/autoconf"}
-                  {:command "./configure" :args ["--prefix=/opt/opscode/embedded"]}
+          :steps [
+                  {:command (if (is-os? "freebsd") "perl" "true")
+                   :args [ "-pi" "-e" "s/(freebsd1|freebsd\\[123\\])\\*/$1\\.\\*/g" (str *omnibus-build-dir* "/gdbm-1.8.3/aclocal.m4") ]}
+                  {:command (if (is-os? "freebsd") "perl" "true")
+                   :args [ "-pi" "-e" "s/(objformat \\|\\|)/$1 test -x \\/usr\\/bin\\/file \\&\\& \\/usr\\/bin\\/file \\/usr\\/bin\\/file \\| grep -v ELF \\>\\/dev\\/null \\|\\|/g" (str *omnibus-build-dir* "/gdbm-1.8.3/aclocal.m4") ]}
+
+                  {:command "/opt/opscode/embedded/bin/autoconf"}
+                  {:command "./configure" :args args }
                   {:command "make" :args ["BINOWN=root" "BINGRP=wheel"]}
-                  {:command "make" :args ["install"]}])
+                  {:command "make" :args ["install"]}]))

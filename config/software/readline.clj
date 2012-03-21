@@ -21,20 +21,30 @@
        (and (is-os? "darwin") (is-machine? "x86_64"))
        { "CFLAGS" "-L/opt/opscode/embedded/lib -I/opt/opscode/embedded/include"
          "LDFLAGS" "-R/opt/opscode/embedded/lib -L/opt/opscode/embedded/lib -I/opt/opscode/embedded/include"}
+       (and (is-os? "freebsd") (is-machine? "amd64"))
+       { "CFLAGS" "-L/opt/opscode/embedded/lib -I/opt/opscode/embedded/include -fPIC"
+         "LDFLAGS" "-Wl,-rpath /opt/opscode/embedded/lib -L/opt/opscode/embedded/lib -I/opt/opscode/embedded/include"}
        (is-os? "linux")
        { "CFLAGS" "-L/opt/opscode/embedded/lib -I/opt/opscode/embedded/include"
          "LDFLAGS" "-Wl,-rpath /opt/opscode/embedded/lib -L/opt/opscode/embedded/lib -I/opt/opscode/embedded/include"}
        (is-os? "solaris2")
        { "CFLAGS" "-L/opt/opscode/embedded/lib -I/opt/opscode/embedded/include"
          "LDFLAGS" "-Wl,-rpath /opt/opscode/embedded/lib -L/opt/opscode/embedded/lib -I/opt/opscode/embedded/include"}
-       )
-      ]
+       )]
 
   (software "readline" :source "readline-5.2"
-            :steps [{
+            :steps [
+                    {:command (if (is-os? "freebsd") "perl" "true")
+                     :args [ "-pi" "-e" "s/^(freebsd\\[3-9\\]\\*)/freebsd\\[3-9\\]\\.\\*\\|freebsd1\\[0-9\\]\\.\\*/g" (str *omnibus-build-dir* "/readline-5.2/support/shlib-install") ]}
+                    {:command (if (is-os? "freebsd") "perl" "true")
+                     :args [ "-pi" "-e" "s/^(freebsd\\[3-9\\]\\*)/freebsd\\[3-9\\]\\.\\*\\|freebsd1\\[0-9\\]\\.\\*/g" (str *omnibus-build-dir* "/readline-5.2/support/shobj-conf") ]}
+                    {:command (if (is-os? "freebsd") "perl" "true")
+                     :args [ "-pi" "-e" "s/(freebsd1|freebsd\\[123\\])\\*/$1\\.\\*/g" (str *omnibus-build-dir* "/readline-5.2/config.rpath") ]}
+
+                    {
                      :env env
                      :command "./configure"
-                     :args ["--prefix=/opt/opscode/embedded"]
-                     }
+                     :args [ "--prefix=/opt/opscode/embedded" ]
+                    }
                     {:command "make"}
                     {:command "make" :args ["install"]}]))

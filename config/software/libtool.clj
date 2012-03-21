@@ -20,10 +20,15 @@
 (software "libtool"
     :source "libtool-2.4"
     :steps [
+            {:command (if (is-os? "freebsd") "perl" "true")
+             :args [ "-pi" "-e" "s/(freebsd1|freebsd\\[123\\])\\*/$1\\.\\*/g" (str *omnibus-build-dir* "/libtool-2.4/configure") ]}
+            {:command (if (is-os? "freebsd") "perl" "true")
+             :args [ "-pi" "-e" "s/(freebsd1|freebsd\\[123\\])\\*/$1\\.\\*/g" (str *omnibus-build-dir* "/libtool-2.4/libltdl/configure") ]}
+            {:command (if (is-os? "freebsd") "perl" "true")
+             :args [ "-pi" "-e" "s/(freebsd1|freebsd\\[123\\]|freebsd\\[\\[123\\]\\]|freebsd\\[\\[12\\]\\])\\*/$1\\.\\*/g" (str *omnibus-build-dir* "/libtool-2.4/libltdl/m4/libtool.m4") ]}
 	    {
 	     :command "./configure"
-	     :args ["--prefix=/opt/opscode/embedded"]
-	     }
+	     :args ["--prefix=/opt/opscode/embedded"]}
 	    { :command (if (or (is-os? "solaris2") (is-os? "freebsd")) "gmake" "make") }
 	    { :command (if (or (is-os? "solaris2") (is-os? "freebsd")) "gmake" "make") :args ["install"]}
 	    ])
