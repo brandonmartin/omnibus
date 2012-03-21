@@ -30,12 +30,12 @@
                   {:command (if (is-os? "freebsd") "perl" "true")
                    :args [ "-pi" "-e" "s/(freebsd1|freebsd\\[\\[123\\]\\]|freebsd\\[\\[12\\]\\])\\*/$1\\.\\*/g" (str *omnibus-build-dir* "/libiconv-1.13.1/m4/libtool.m4") ]}
                   {:command (if (is-os? "freebsd") "sh" "true")
-                   :args [ "-c" "aclocal -I m4 -I srcm4 --output=aclocal.m4 && touch aclocal.m4 && automake --add-missing --gnits srclib/Makefile && autoconf && autoheader" ]}
+                   :args [ "-c" "/opt/opscode/embedded/bin/aclocal -I m4 -I srcm4 --output=aclocal.m4 && touch aclocal.m4 && /opt/opscode/embedded/bin/automake --add-missing --gnits srclib/Makefile && /opt/opscode/embedded/bin/autoconf && /opt/opscode/embedded/bin/autoheader" ]}
                   {:command (if (is-os? "freebsd") "sh" "true")
-                   :args [ "-c" "cd preload && aclocal -I ../m4 -I ../srcm4 && autoconf --include autoconf" ]}
+                   :args [ "-c" "cd preload && /opt/opscode/embedded/bin/aclocal -I ../m4 -I ../srcm4 && /opt/opscode/embedded/bin/autoconf --include autoconf" ]}
 
                   {:command (if (is-os? "freebsd") "sh" "true")
-                   :args [ "-c" "cd libcharset && aclocal -I ../m4 -I ../srcm4 --output=autoconf/aclocal.m4 && autoconf --include autoconf && autoheader --include autoconf && touch config.h.in" ]}
+                   :args [ "-c" "cd libcharset && /opt/opscode/embedded/bin/aclocal -I ../m4 -I ../srcm4 --output=autoconf/aclocal.m4 && /opt/opscode/embedded/bin/autoconf --include autoconf && /opt/opscode/embedded/bin/autoheader --include autoconf && touch config.h.in" ]}
 
                   {:env {"CFLAGS" "-L/opt/opscode/embedded/lib -I/opt/opscode/embedded/include" "LD_RUN_PATH" "/opt/opscode/embedded/lib"}
                    :command "./configure" :args args }

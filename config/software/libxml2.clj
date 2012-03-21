@@ -34,7 +34,7 @@
 (software "libxml2" :source "libxml2-2.7.7"
           :steps [
                   {:command (if (and (is-os? "freebsd") (or (is-platform-version-like? "10") (is-platform-version-like? "9"))) "sh" "true")
-                   :args [ "-c" "libtoolize --copy --force && aclocal && automake --add-missing && autoconf" ]}
+                   :args [ "-c" "/opt/opscode/embedded/bin/libtoolize --copy --force && /opt/opscode/embedded/bin/aclocal && /opt/opscode/embedded/bin/automake --add-missing && /opt/opscode/embedded/bin/autoconf" ]}
                   {:env {"LDFLAGS" "-L/opt/opscode/embedded/lib -I/opt/opscode/embedded/include"
                          "CFLAGS" "-L/opt/opscode/embedded/lib -I/opt/opscode/embedded/include"
                          "LD_RUN_PATH" "/opt/opscode/embedded/lib"}
