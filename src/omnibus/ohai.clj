@@ -47,6 +47,16 @@
   [to-check]
   (= (os-and-machine :platform) to-check))
 
+(defn is-platform-version?
+  "Returns true if the current platform version matches the argument"
+  [to-check]
+  (= (os-and-machine :platform_version) to-check))
+
+(defn is-platform-version-like?
+  "Returns true if the current platform version contains the argument"
+  [to-check]
+  (.contains (os-and-machine :platform_version) to-check))
+
 (defn is-os?
   "Returns true if the current OS matches the argument"
   [to-check]
