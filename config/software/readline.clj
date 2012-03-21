@@ -39,8 +39,9 @@
                     {:command (if (is-os? "freebsd") "perl" "true")
                      :args [ "-pi" "-e" "s/^(freebsd\\[3-9\\]\\*)/freebsd\\[3-9\\]\\.\\*\\|freebsd1\\[0-9\\]\\.\\*/g" (str *omnibus-build-dir* "/readline-5.2/support/shobj-conf") ]}
                     {:command (if (is-os? "freebsd") "perl" "true")
-                     :args [ "-pi" "-e" "s/(freebsd1|freebsd\\[123\\])\\*/$1\\.\\*/g" (str *omnibus-build-dir* "/readline-5.2/config.rpath") ]}
-
+                     :args [ "-pi" "-e" "s/(x86_64-unknown-freebsd)/$1\\`echo \\$\\{UNAME_RELEASE\\}\\|sed -e 's\\/\\[-\\(\\].\\*\\/\\/'\\`/g" (str *omnibus-build-dir* "/readline-5.2/support/config.guess") ]}
+                    {:command (if (is-os? "freebsd") "perl" "true")
+                     :args [ "-pi" "-e" "s/(freebsd1|freebsd\\[123\\])\\*/$1\\.\\*/g" (str *omnibus-build-dir* "/readline-5.2/support/config.rpath") ]}
                     {
                      :env env
                      :command "./configure"
