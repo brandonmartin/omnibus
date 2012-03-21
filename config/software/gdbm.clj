@@ -28,10 +28,10 @@
 (software "gdbm" :source "gdbm-1.8.3"
           :steps [
                   {:command (if (is-os? "freebsd") "perl" "true")
-                   :args [ "-pi" "-e" "s/(freebsd1|freebsd\\[123\\])\\*/$1\\.\\*/g" (str *omnibus-build-dir* "/gdbm-1.8.3/aclocal.m4") ]}
-                  {:command (if (is-os? "freebsd") "perl" "true")
-                   :args [ "-pi" "-e" "s/(objformat \\|\\|)/$1 test -x \\/usr\\/bin\\/file \\&\\& \\/usr\\/bin\\/file \\/usr\\/bin\\/file \\| grep -v ELF \\>\\/dev\\/null \\|\\|/g" (str *omnibus-build-dir* "/gdbm-1.8.3/aclocal.m4") ]}
-
+                   :args [ "-pi" "-e" "s/(\\$\\(LIBTOOL\\))( \\$\\(INSTALL\\))/$1 --mode=install $2/g" (str *omnibus-build-dir* "/gdbm-1.8.3/Makefile.in") ]}
+                  {:command (if (is-os? "freebsd") "/opt/opscode/embedded/bin/libtoolize" "true")
+                   :args [ "--copy" "--force" ]}
+                  {:command (if (is-os? "freebsd") "/opt/opscode/embedded/bin/aclocal" "true") }
                   {:command "/opt/opscode/embedded/bin/autoconf"}
                   {:command "./configure" :args args }
                   {:command "make" :args ["BINOWN=root" "BINGRP=wheel"]}
