@@ -21,9 +21,9 @@
                :build-subdir "build_unix"
                :steps [
                        {:command (if (is-os? "freebsd") "perl" "true")
-                        :args [ "-pi" "-e" "s/(freebsd1|freebsd\\[123\\])\\*/$1\\.\\*/g" (str *omnibus-build-dir* "/db-5.0.26.NC/dist/aclocal/libtool.m4") ]}
+                        :args [ "-pi" "-e" "s/(freebsd1|freebsd\\[\\[123\\]\\])\\*/$1\\.\\*/g" (str *omnibus-build-dir* "/db-5.0.26.NC/dist/aclocal/libtool.m4") ]}
                        {:command (if (is-os? "freebsd") "sh" "true")
-                        :args [ "-c" "cd ../dist && /opt/opscode/embedded/bin/aclocal -I aclocal -I aclocal_java && /opt/opscode/embedded/bin/autoconf" ]}
+                        :args [ "-c" "cd ../dist && PATH=/opt/opscode/embedded/bin:$PATH ./s_config" ]}
                        {:command "../dist/configure" :args ["--prefix=/opt/opscode/embedded"]}
                        {:command "make"}
                        {:command "make" :args ["install"]}])
