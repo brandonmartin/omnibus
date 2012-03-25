@@ -22,6 +22,7 @@
         [omnibus.steps]
         [omnibus.log]
         [omnibus.util]
+        [omnibus.cross]
         [omnibus.s3]
         [clojure.java.shell :only [sh]]
         [clojure.contrib.logging :only [log]]        
@@ -33,6 +34,7 @@
 
 (def *omnibus-home-dir* (. System getProperty "user.dir"))
 (def *omnibus-source-dir* (file-str *omnibus-home-dir* "/source"))
+(def *omnibus-patch-dir* (file-str *omnibus-source-dir* "/patches"))
 (def *omnibus-software-dir* (file-str *omnibus-home-dir* "/config/software"))
 (def *omnibus-projects-dir* (file-str *omnibus-home-dir* "/config/projects"))
 (def *omnibus-build-dir* (file-str *omnibus-home-dir* "/build"))
