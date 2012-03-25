@@ -1,0 +1,11 @@
+--- ./examples/rlfe/rlfe.c.orig	2012-03-22 17:33:16.000000000 -0700
++++ ./examples/rlfe/rlfe.c	2012-03-22 17:58:29.000000000 -0700
+@@ -338,7 +338,7 @@
+           if (*line)
+             add_history (line);
+         }
+-      free (line);
++      rl_free (line);
+     }
+   rl_callback_handler_remove ();
+   buf_count = 0;

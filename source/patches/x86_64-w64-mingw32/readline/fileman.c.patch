@@ -1,0 +1,11 @@
+--- ./examples/fileman.c.orig	2012-03-22 17:33:16.000000000 -0700
++++ ./examples/fileman.c	2012-03-22 17:58:29.000000000 -0700
+@@ -145,7 +145,7 @@
+           execute_line (s);
+         }
+ 
+-      free (line);
++      rl_free (line);
+     }
+   exit (0);
+ }

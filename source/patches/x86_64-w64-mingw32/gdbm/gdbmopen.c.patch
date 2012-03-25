@@ -1,0 +1,13 @@
+--- gdbmopen.c.orig	2012-03-22 15:21:23.000000000 -0700
++++ gdbmopen.c	2012-03-22 15:34:52.000000000 -0700
+@@ -121,6 +121,10 @@
+       dbf->file_locking = FALSE;
+     }
+ 
++#ifdef _WIN32
++  _fmode = _O_BINARY;
++#endif
++
+   /* Open the file. */
+   need_trunc = FALSE;
+   switch (flags & GDBM_OPENMASK)

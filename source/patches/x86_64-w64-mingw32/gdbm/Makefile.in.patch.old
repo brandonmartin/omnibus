@@ -1,0 +1,25 @@
+--- Makefile.in.orig	2012-03-22 15:21:23.000000000 -0700
++++ Makefile.in	2012-03-22 15:38:53.000000000 -0700
+@@ -26,11 +26,11 @@
+ # Where the system [n]dbm routines are...
+ LIBS = @LIBS@ -lc
+ 
+-CFLAGS = @CFLAGS@
++CFLAGS = -O
+ LDFLAGS = @LDFLAGS@
+ 
+ # Common prefix for installation directories
+-prefix = @prefix@
++prefix = /usr/local
+ exec_prefix = @exec_prefix@
+ binprefix = $(exec_prefix)
+ manprefix = $(prefix)
+@@ -130,7 +130,7 @@
+ 	$(srcdir)/mkinstalldirs $(INSTALL_ROOT)$(libdir) \
+ 		$(INSTALL_ROOT)$(includedir) $(INSTALL_ROOT)$(man3dir) \
+ 		$(INSTALL_ROOT)$(infodir)
+-	$(LIBTOOL) $(INSTALL) -c libgdbm.la $(INSTALL_ROOT)$(libdir)/libgdbm.la
++	$(LIBTOOL) install -c libgdbm.la $(INSTALL_ROOT)$(libdir)/libgdbm.la
+ 	$(INSTALL_DATA) gdbm.h \
+ 		$(INSTALL_ROOT)$(includedir)/gdbm.h
+ 	$(INSTALL_DATA) $(srcdir)/gdbm.3 \

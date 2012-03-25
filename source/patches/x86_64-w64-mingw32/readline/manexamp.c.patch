@@ -1,0 +1,11 @@
+--- ./examples/manexamp.c.orig	2012-03-22 17:33:16.000000000 -0700
++++ ./examples/manexamp.c	2012-03-22 17:58:29.000000000 -0700
+@@ -40,7 +40,7 @@
+      to the free pool. */
+   if (line_read)
+     {
+-      free (line_read);
++      rl_free (line_read);
+       line_read = (char *)NULL;
+     }
+ 

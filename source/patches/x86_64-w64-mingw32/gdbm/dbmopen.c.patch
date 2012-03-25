@@ -1,0 +1,30 @@
+--- dbmopen.c.orig	2012-03-22 15:21:23.000000000 -0700
++++ dbmopen.c	2012-03-22 15:34:52.000000000 -0700
+@@ -60,7 +60,9 @@
+ {
+   char* pag_file;	    /* Used to construct "file.pag". */
+   char* dir_file;	    /* Used to construct "file.dir". */
++#ifndef _WIN32
+   struct stat dir_stat;	    /* Stat information for "file.dir". */
++#endif
+   gdbm_file_info *temp_dbf;  /* Temporary file pointer storage. */
+ 
+ 
+@@ -105,6 +107,8 @@
+       goto done;
+     }
+ 
++#ifndef _WIN32
++
+   /* If the database is new, link "file.dir" to "file.pag". This is done
+      so the time stamp on both files is the same. */
+   if (stat (dir_file, &dir_stat) == 0)
+@@ -131,6 +135,8 @@
+ 	}
+     }
+ 
++#endif
++
+ done:
+   free (pag_file);
+   free (dir_file);

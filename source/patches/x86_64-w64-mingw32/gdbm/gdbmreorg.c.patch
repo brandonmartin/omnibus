@@ -1,0 +1,14 @@
+--- gdbmreorg.c.orig	2012-03-22 15:21:23.000000000 -0700
++++ gdbmreorg.c	2012-03-22 15:39:33.000000000 -0700
+@@ -103,7 +103,11 @@
+   strcpy (&new_name[0], dbf->name);
+   new_name[len+2] = 0;
+   new_name[len+1] = '#';
++#ifndef _WIN32
+   while ( (len > 0) && new_name[len-1] != '/')
++#else
++  while ( (len > 0) && new_name[len-1] != '\\')
++#endif
+     {
+       new_name[len] = new_name[len-1];
+       len -= 1;

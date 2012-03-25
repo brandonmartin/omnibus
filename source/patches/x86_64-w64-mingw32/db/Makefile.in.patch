@@ -1,0 +1,10 @@
+--- Makefile.in.orig	2012-03-23 12:12:16.000000000 -0700
++++ Makefile.in	2012-03-23 12:12:50.000000000 -0700
+@@ -1095,6 +1095,7 @@
+ 	    $(CHMOD) $(dmode) $(DESTDIR)$(bindir))
+ 	@for i in $(UTIL_PROGS); do \
+ 		test -f $$i.exe && i=$$i.exe || i=$$i; \
++		cp -p $$i .libs/$$i; \
+ 		$(RM) $(DESTDIR)$(bindir)/$$i; \
+ 		$(INSTALLER) $$i $(DESTDIR)$(bindir)/$$i; \
+ 		$(STRIP) $(DESTDIR)$(bindir)/$$i; \

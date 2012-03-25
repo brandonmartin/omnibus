@@ -1,0 +1,11 @@
+--- ./rltty.h.orig	2012-03-22 17:33:17.000000000 -0700
++++ ./rltty.h	2012-03-22 17:58:29.000000000 -0700
+@@ -38,7 +38,7 @@
+ #endif /* TERMIO_TTY_DRIVER */
+ 
+ /* Other (BSD) machines use sgtty. */
+-#if defined (NEW_TTY_DRIVER)
++#if defined (NEW_TTY_DRIVER) && !defined (_WIN32)
+ #  include <sgtty.h>
+ #endif
+ 

@@ -1,0 +1,20 @@
+--- ./examples/readlinebuf.h.orig	2012-03-22 17:33:16.000000000 -0700
++++ ./examples/readlinebuf.h	2012-03-22 17:58:29.000000000 -0700
+@@ -72,7 +72,7 @@
+ 			
+ 		if ( rd < n ) {
+ 			low_ = high_ = 0;
+-			free( line_ ); // free( NULL ) is a noop
++			rl_free( line_ ); // free( NULL ) is a noop
+ 			line_ = readline( prompt_ );
+ 			if ( line_ ) {
+ 				high_ = strlen( line_ );
+@@ -87,7 +87,7 @@
+ 	virtual int_type underflow() {
+ 		if ( high_ == low_ ) {
+ 			low_ = high_ = 0;
+-			free( line_ ); // free( NULL ) is a noop
++			rl_free( line_ ); // free( NULL ) is a noop
+ 			line_ = readline( prompt_ );
+ 			if ( line_ ) {
+ 				high_ = strlen( line_ );

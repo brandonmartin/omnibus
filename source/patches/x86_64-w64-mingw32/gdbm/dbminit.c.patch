@@ -1,0 +1,30 @@
+--- dbminit.c.orig	2012-03-22 15:21:23.000000000 -0700
++++ dbminit.c	2012-03-22 15:34:52.000000000 -0700
+@@ -51,7 +51,9 @@
+ {
+   char* pag_file;	    /* Used to construct "file.pag". */
+   char* dir_file;	    /* Used to construct "file.dir". */
++#ifndef _WIN32
+   struct stat dir_stat;	    /* Stat information for "file.dir". */
++#endif
+   int ret;
+ 
+ 
+@@ -91,6 +93,8 @@
+ 	}
+     }
+ 
++#ifndef _WIN32
++
+   /* If the database is new, link "file.dir" to "file.pag". This is done
+      so the time stamp on both files is the same. */
+   if (stat (dir_file, &dir_stat) == 0)
+@@ -117,6 +121,8 @@
+ 	}
+     }
+ 
++#endif
++
+   ret = 0;
+ 
+ done:

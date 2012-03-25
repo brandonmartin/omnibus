@@ -1,0 +1,34 @@
+--- ./posixdir.h.orig	2012-03-22 17:33:17.000000000 -0700
++++ ./posixdir.h	2012-03-22 17:58:29.000000000 -0700
+@@ -23,6 +23,7 @@
+ #if !defined (_POSIXDIR_H_)
+ #define _POSIXDIR_H_
+ 
++#if !defined (_WIN32)
+ #if defined (HAVE_DIRENT_H)
+ #  include <dirent.h>
+ #  if defined (HAVE_STRUCT_DIRENT_D_NAMLEN)
+@@ -30,6 +31,7 @@
+ #  else
+ #    define D_NAMLEN(d)   (strlen ((d)->d_name))
+ #  endif /* !HAVE_STRUCT_DIRENT_D_NAMLEN */
++#    define FILENAME(d)   ((d)->d_name)
+ #else
+ #  if defined (HAVE_SYS_NDIR_H)
+ #    include <sys/ndir.h>
+@@ -44,7 +46,15 @@
+ #    define dirent direct
+ #  endif /* !dirent */
+ #  define D_NAMLEN(d)   ((d)->d_namlen)
++#    define FILENAME(d)   ((d)->d_name)
+ #endif /* !HAVE_DIRENT_H */
++#else
++#  undef FILENAME
++#  define FILENAME(d) (d).cFileName
++#  define closedir(dir) FindClose (dir)
++#  undef D_NAMLEN
++#  define D_NAMLEN(d) strlen (d.cFileName)
++#endif /* _WIN32 */
+ 
+ #if defined (HAVE_STRUCT_DIRENT_D_INO) && !defined (HAVE_STRUCT_DIRENT_D_FILENO)
+ #  define d_fileno d_ino

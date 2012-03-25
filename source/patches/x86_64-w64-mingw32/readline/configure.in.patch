@@ -1,0 +1,56 @@
+--- ./configure.in.orig	2012-03-22 17:33:17.000000000 -0700
++++ ./configure.in	2012-03-22 17:58:29.000000000 -0700
+@@ -30,7 +30,7 @@
+ AC_PREREQ(2.50)
+ 
+ AC_CONFIG_SRCDIR(readline.h)
+-AC_CONFIG_AUX_DIR(./support)
++dnl AC_CONFIG_AUX_DIR(./support)
+ AC_CONFIG_HEADERS(config.h)
+ 
+ dnl update the value of RL_READLINE_VERSION in readline.h when this changes
+@@ -111,6 +111,44 @@
+ dnl AC_AIX
+ AC_MINIX
+ 
++dnl BEGIN changes for CYGNUS cross-building for Cygwin
++ 
++dnl load up the cross-building cache file -- add more cases and cache
++dnl files as necessary
++if test "x$cross_compiling" = "xyes"; then
++    case "${host}" in
++    *-cygwin*)
++	cross_cache=${srcdir}/cross-build/cygwin.cache
++	if test -r "${cross_cache}"; then
++	    echo "loading cross-build cache file ${cross_cache}"
++	    . ${cross_cache}
++	fi
++	LOCAL_CFLAGS="$LOCAL_CFLAGS -I${srcdir}/../libtermcap"
++	unset cross_cache
++	;;
++    *)  echo "configure: cross-compiling for a non-cygwin target is not supported" >&2
++	;;
++    esac
++fi
++ 
++if test "x$cross_compiling" = "xyes"; then
++  CROSS_COMPILING_FLAG=-DCROSS_COMPILING
++else
++  CROSS_COMPILING_FLAG=
++fi
++AC_SUBST(CROSS_COMPILING_FLAG)
++ 
++if test -z "$CC_FOR_BUILD"; then
++    if test "x$cross_compiling" = "xno"; then
++        CC_FOR_BUILD='$(CC)'
++    else
++        CC_FOR_BUILD=gcc
++    fi
++fi
++AC_SUBST(CC_FOR_BUILD)
++ 
++dnl END changes for CYGNUS cross-building for Cygwin
++
+ # If we're using gcc and the user hasn't specified CFLAGS, add -O to CFLAGS.
+ test -n "$GCC" && test -n "$auto_cflags" && CFLAGS="$CFLAGS -O"
+ 

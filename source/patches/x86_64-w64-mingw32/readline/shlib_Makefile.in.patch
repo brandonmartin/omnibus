@@ -1,0 +1,129 @@
+--- shlib/Makefile.in.orig	2012-03-22 17:33:16.000000000 -0700
++++ shlib/Makefile.in	2012-03-22 17:58:29.000000000 -0700
+@@ -29,7 +29,7 @@
+ RL_LIBRARY_NAME = readline
+ 
+ srcdir = @srcdir@
+-VPATH = .:@top_srcdir@
++VPATH = @top_srcdir@ @srcdir@ @top_srcdir@/win32
+ topdir = @top_srcdir@
+ BUILD_DIR = @BUILD_DIR@
+ 
+@@ -42,13 +42,24 @@
+ AR = @AR@
+ ARFLAGS = @ARFLAGS@
+ RM = rm -f
+-CP = cp
+ MV = mv
+-LN = ln
++
+ 
+ SHELL = @MAKE_SHELL@
+ 
++MINGW_BUILD = $(shell ( $(CC) --version | grep mingw > /dev/null || expr "$(CC)" : '.*-mno-cygwin' > /dev/null ); echo $$(expr $$? = 0))
++MSVC_BUILD = $(shell test $(shell $(SHELL) -c LIB > /dev/null 2>&1; echo $$?) == 127 || echo 1)
++BCC_BUILD = $(shell test $(shell $(SHELL) -c IMPLIB > /dev/null 2>&1; echo $$?) == 127 || echo 1)
++
++ifeq ($(MINGW_BUILD),1)
++  CP = cp -fp
++  LN = cp -fp
++  host_os = mingw
++else
++  CP = cp
++  LN = ln
+ host_os = @host_os@
++endif
+ 
+ prefix = @prefix@
+ exec_prefix = @exec_prefix@
+@@ -76,7 +87,7 @@
+ # changes to bash-maintainers@gnu.org.
+ #
+ SHOBJ_CC = @SHOBJ_CC@
+-SHOBJ_CFLAGS = @SHOBJ_CFLAGS@
++SHOBJ_CFLAGS = @SHOBJ_CFLAGS@ -DBUILD_READLINE_DLL
+ SHOBJ_LD = @SHOBJ_LD@
+ 
+ SHOBJ_LDFLAGS = @SHOBJ_LDFLAGS@
+@@ -116,8 +127,22 @@
+ 
+ # The name of the main library target.
+ 
++ifeq ($(MINGW_BUILD),1)
++  SHARED_READLINE = readline$(SHLIB_MAJOR).$(SHLIB_LIBSUFF)
++  SHARED_HISTORY = history$(SHLIB_MAJOR).$(SHLIB_LIBSUFF)
++
++  READLINE_GCC_DLL_EXP_LIB = libreadline.dll.a
++  READLINE_MSC_DLL_EXP_LIB = readline.dll.lib
++  READLINE_BCC_DLL_EXP_LIB = readline-bcc.dll.lib
++  READLINE_DLL_EXP_DEF = readline.def
++  HISTORY_GCC_DLL_EXP_LIB = libhistory.dll.a
++  HISTORY_MSC_DLL_EXP_LIB = history.dll.lib
++  HISTORY_BCC_DLL_EXP_LIB = history-bcc.dll.lib
++  HISTORY_DLL_EXP_DEF = history.def
++else
+ SHARED_READLINE = $(SHLIB_LIBPREF)readline$(SHLIB_DOT)$(SHLIB_LIBVERSION)
+ SHARED_HISTORY = $(SHLIB_LIBPREF)history$(SHLIB_DOT)$(SHLIB_LIBVERSION)
++endif
+ SHARED_LIBS = $(SHARED_READLINE) $(SHARED_HISTORY)
+ 
+ # The C code source files for this library.
+@@ -162,6 +187,29 @@
+ 	@echo "Please send the changes you made to bash-maintainers@gnu.org"
+ 	@echo "for inclusion in future bash and readline releases."
+ 
++ifeq ($(MINGW_BUILD),1)
++$(SHARED_READLINE):	$(SHARED_OBJ) readline-dllversion.so
++	$(RM) $@
++	$(CC) --shared $(SHARED_OBJ) readline-dllversion.so \
++	 -o $@ -Wl,--out-implib,$(READLINE_GCC_DLL_EXP_LIB) -Wl,--output-def,$(READLINE_DLL_EXP_DEF) -Wl,-s
++ifeq ($(MSVC_BUILD),1)
++	LIB /MACHINE:X86 /NAME:$@ /DEF:$(READLINE_DLL_EXP_DEF) /OUT:$(READLINE_MSC_DLL_EXP_LIB)
++endif
++ifeq ($(BCC_BUILD),1)
++	IMPLIB $(READLINE_BCC_DLL_EXP_LIB) $@
++endif
++
++$(SHARED_HISTORY):	$(SHARED_HISTOBJ) xmalloc.so history-dllversion.so
++	$(RM) $@
++	$(CC) --shared $(SHARED_HISTOBJ) xmalloc.so history-dllversion.so \
++	 -o $@ -Wl,--out-implib,$(HISTORY_GCC_DLL_EXP_LIB) -Wl,--output-def,$(HISTORY_DLL_EXP_DEF) -Wl,-s
++ifeq ($(MSVC_BUILD),1)
++	LIB /MACHINE:X86 /NAME:$@ /DEF:$(HISTORY_DLL_EXP_DEF) /OUT:$(HISTORY_MSC_DLL_EXP_LIB)
++endif
++ifeq ($(BCC_BUILD),1)
++	IMPLIB $(HISTORY_BCC_DLL_EXP_LIB) $@
++endif
++else
+ $(SHARED_READLINE):	$(SHARED_OBJ)
+ 	$(RM) $@
+ 	$(SHOBJ_LD) ${SHOBJ_LDFLAGS} ${SHLIB_XLDFLAGS} -o $@ $(SHARED_OBJ) $(SHLIB_LIBS)
+@@ -169,6 +217,7 @@
+ $(SHARED_HISTORY):	$(SHARED_HISTOBJ) xmalloc.so
+ 	$(RM) $@
+ 	$(SHOBJ_LD) ${SHOBJ_LDFLAGS} ${SHLIB_XLDFLAGS} -o $@ $(SHARED_HISTOBJ) xmalloc.so $(SHLIB_LIBS)
++endif
+ 
+ # Since tilde.c is shared between readline and bash, make sure we compile 
+ # it with the right flags when it's built as part of readline
+@@ -183,6 +232,20 @@
+ install: installdirs $(SHLIB_STATUS)
+ 	$(SHELL) $(topdir)/support/shlib-install -O $(host_os) -d $(DESTDIR)$(libdir) -b $(DESTDIR)$(bindir) -i "$(INSTALL_DATA)" $(SHARED_HISTORY)
+ 	$(SHELL) $(topdir)/support/shlib-install -O $(host_os) -d $(DESTDIR)$(libdir) -b $(DESTDIR)$(bindir) -i "$(INSTALL_DATA)" $(SHARED_READLINE)
++ifeq ($(MINGW_BUILD),1)
++	$(SHELL) $(topdir)/support/shlib-install -O $(host_os) -d $(DESTDIR)$(libdir) -b $(DESTDIR)$(bindir) -i "$(INSTALL_DATA)" $(READLINE_GCC_DLL_EXP_LIB)
++	$(SHELL) $(topdir)/support/shlib-install -O $(host_os) -d $(DESTDIR)$(libdir) -b $(DESTDIR)$(bindir) -i "$(INSTALL_DATA)" $(READLINE_DLL_EXP_DEF)
++	$(SHELL) $(topdir)/support/shlib-install -O $(host_os) -d $(DESTDIR)$(libdir) -b $(DESTDIR)$(bindir) -i "$(INSTALL_DATA)" $(HISTORY_GCC_DLL_EXP_LIB)
++	$(SHELL) $(topdir)/support/shlib-install -O $(host_os) -d $(DESTDIR)$(libdir) -b $(DESTDIR)$(bindir) -i "$(INSTALL_DATA)" $(HISTORY_DLL_EXP_DEF)
++ifeq ($(MSVC_BUILD),1)
++	$(SHELL) $(topdir)/support/shlib-install -O $(host_os) -d $(DESTDIR)$(libdir) -b $(DESTDIR)$(bindir) -i "$(INSTALL_DATA)" $(READLINE_MSC_DLL_EXP_LIB)
++	$(SHELL) $(topdir)/support/shlib-install -O $(host_os) -d $(DESTDIR)$(libdir) -b $(DESTDIR)$(bindir) -i "$(INSTALL_DATA)" $(HISTORY_MSC_DLL_EXP_LIB)
++endif
++ifeq ($(BCC_BUILD),1)
++	$(SHELL) $(topdir)/support/shlib-install -O $(host_os) -d $(DESTDIR)$(libdir) -b $(DESTDIR)$(bindir) -i "$(INSTALL_DATA)" $(READLINE_BCC_DLL_EXP_LIB)
++	$(SHELL) $(topdir)/support/shlib-install -O $(host_os) -d $(DESTDIR)$(libdir) -b $(DESTDIR)$(bindir) -i "$(INSTALL_DATA)" $(HISTORY_BCC_DLL_EXP_LIB)
++endif
++endif
+ 	@echo install: you may need to run ldconfig
+ 
+ uninstall:

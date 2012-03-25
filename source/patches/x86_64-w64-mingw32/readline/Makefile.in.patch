@@ -1,0 +1,103 @@
+--- ./Makefile.in.orig	2012-03-22 17:33:16.000000000 -0700
++++ ./Makefile.in	2012-03-22 17:58:29.000000000 -0700
+@@ -20,6 +20,9 @@
+ 
+ PACKAGE = @PACKAGE_NAME@
+ VERSION = @PACKAGE_VERSION@
++MAJOR=$(shell echo $(RL_LIBRARY_VERSION) | sed -e "s/\..*$$//")\
++MINOR=$(shell echo $(RL_LIBRARY_VERSION) | sed -e "s/^[^\.]*\.0*\([0-9]\+\).*$$/\1/") \
++VERSADD = -Wl,--major-image-version=$(MAJOR) -Wl,--minor-image-version=$(MINOR)
+ 
+ PACKAGE_BUGREPORT = @PACKAGE_BUGREPORT@
+ PACKAGE_NAME = @PACKAGE_NAME@
+@@ -27,7 +30,7 @@
+ PACKAGE_VERSION = @PACKAGE_VERSION@
+ 
+ srcdir = @srcdir@
+-VPATH = .:@srcdir@
++VPATH = @srcdir@ @top_srcdir@/win32
+ top_srcdir = @top_srcdir@
+ BUILD_DIR = @BUILD_DIR@
+ 
+@@ -40,7 +43,7 @@
+ AR = @AR@
+ ARFLAGS = @ARFLAGS@
+ RM = rm -f
+-CP = cp
++CP = cp	-fp
+ MV = mv
+ 
+ PURIFY = @PURIFY@
+@@ -69,7 +72,7 @@
+ ETAGS = etags -tw
+ CTAGS = ctags -tw
+ 
+-CFLAGS = @CFLAGS@
++CFLAGS = @CFLAGS@ -DREADLINE_STATIC
+ LOCAL_CFLAGS = @LOCAL_CFLAGS@ -DRL_LIBRARY_VERSION='"$(RL_LIBRARY_VERSION)"'
+ CPPFLAGS = @CPPFLAGS@
+ 
+@@ -98,6 +101,8 @@
+ LIBRARY_NAME = libreadline.a
+ STATIC_LIBS = libreadline.a libhistory.a
+ 
++WCWIDTH_OBJ = wcwidth.o
++
+ # The C code source files for this library.
+ CSOURCES = $(srcdir)/readline.c $(srcdir)/funmap.c $(srcdir)/keymaps.c \
+ 	   $(srcdir)/vi_mode.c $(srcdir)/parens.c $(srcdir)/rltty.c \
+@@ -110,7 +115,7 @@
+ 	   $(srcdir)/histfile.c $(srcdir)/nls.c $(srcdir)/search.c \
+ 	   $(srcdir)/shell.c $(srcdir)/savestring.c $(srcdir)/tilde.c \
+ 	   $(srcdir)/text.c $(srcdir)/misc.c $(srcdir)/compat.c \
+-	   $(srcdir)/mbutil.c
++	   $(srcdir)/mbutil.c $(srcdir)/support/wcwidth.c
+ 
+ # The header files for this library.
+ HSOURCES = readline.h rldefs.h chardefs.h keymaps.h history.h histlib.h \
+@@ -123,7 +128,8 @@
+ OBJECTS = readline.o vi_mode.o funmap.o keymaps.o parens.o search.o \
+ 	  rltty.o complete.o bind.o isearch.o display.o signals.o \
+ 	  util.o kill.o undo.o macro.o input.o callback.o terminal.o \
+-	  text.o nls.o misc.o compat.o xmalloc.o $(HISTOBJ) $(TILDEOBJ)
++	  text.o nls.o misc.o compat.o xmalloc.o $(HISTOBJ) $(TILDEOBJ) \
++	  $(WCWIDTH_OBJ)
+ 
+ # The texinfo files which document this library.
+ DOCSOURCE = doc/rlman.texinfo doc/rltech.texinfo doc/rluser.texinfo
+@@ -159,6 +165,10 @@
+ 	$(AR) $(ARFLAGS) $@ $(HISTOBJ) xmalloc.o
+ 	-test -n "$(RANLIB)" && $(RANLIB) $@
+ 
++wcwidth.o: $(srcdir)/support/wcwidth.c
++	$(RM) $@
++	$(CC) $(CCFLAGS) -c $(srcdir)/support/wcwidth.c
++
+ # Since tilde.c is shared between readline and bash, make sure we compile
+ # it with the right flags when it's built as part of readline
+ tilde.o:	tilde.c
+@@ -191,7 +201,6 @@
+ #$(srcdir)/configure: $(srcdir)/configure.in	## Comment-me-out in distribution
+ #	cd $(srcdir) && autoconf	## Comment-me-out in distribution
+ 
+-
+ shared:	force
+ 	-test -d shlib || mkdir shlib
+ 	-( cd shlib ; ${MAKE} ${MFLAGS} all )
+@@ -217,6 +226,16 @@
+ 
+ maybe-uninstall-headers: uninstall-headers
+ 
++## CYGNUS LOCAL
++## Don't mess with people's installed readline's.
++## This tries to install this version of readline over whatever
++## version is already installed on the system (which could be a
++## newer version). There is no real reason for us to install
++## readline along with GDB. GDB links statically against readline,
++## so it doesn't depend on us installing it on the system.
++
++#install:
++
+ install:	$(INSTALL_TARGETS)
+ 
+ install-static: installdirs $(STATIC_LIBS) install-headers install-doc

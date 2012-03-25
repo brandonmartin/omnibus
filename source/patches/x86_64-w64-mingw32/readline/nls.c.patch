@@ -1,0 +1,18 @@
+--- ./nls.c.orig	2012-03-22 17:33:17.000000000 -0700
++++ ./nls.c	2012-03-22 17:58:29.000000000 -0700
+@@ -116,6 +116,7 @@
+     lspec = "";
+   t = setlocale (LC_CTYPE, lspec);
+ 
++#ifndef _WIN32
+   if (t && *t && (t[0] != 'C' || t[1]) && (STREQ (t, "POSIX") == 0))
+     {
+       _rl_meta_flag = 1;
+@@ -124,6 +125,7 @@
+       return (1);
+     }
+   else
++#endif
+     return (0);
+ 
+ #else /* !HAVE_SETLOCALE */

@@ -1,0 +1,49 @@
+--- systems.h.orig	2012-03-22 15:21:23.000000000 -0700
++++ systems.h	2012-03-22 15:34:52.000000000 -0700
+@@ -51,6 +51,10 @@
+ #include <fcntl.h>
+ #endif
+ 
++#ifdef _WIN32
++#include <sys/locking.h>
++#endif
++
+ #ifndef SEEK_SET
+ #define SEEK_SET        0
+ #endif
+@@ -83,6 +87,22 @@
+ #define READLOCK_FILE(dbf) lock_val = flock (dbf->desc, LOCK_SH + LOCK_NB)
+ #define WRITELOCK_FILE(dbf) lock_val = flock (dbf->desc, LOCK_EX + LOCK_NB)
+ 
++#elif defined(_WIN32)
++
++#define UNLOCK_FILE(dbf)                              \
++      {                                               \
++          _lseek(dbf->desc, 0, SEEK_SET);             \
++          _locking(dbf->desc, _LK_UNLCK, 1);         \
++      }
++
++#define READLOCK_FILE(dbf)                                    \
++      {                                                       \
++          _lseek(dbf->desc, 0, SEEK_SET);                     \
++          lock_val = _locking(dbf->desc, _LK_NBLCK, 1);       \
++      }
++
++#define WRITELOCK_FILE(dbf)   READLOCK_FILE(dbf)
++
+ #else
+ 
+ /* Assume it is done like System V. */
+@@ -124,8 +144,12 @@
+ 
+ /* Do we have fsync? */
+ #if !HAVE_FSYNC
++#ifdef _WIN32
++#define fsync(f) { extern int _commit(int); _commit(f); _commit(f); }
++#else
+ #define fsync(f) {sync(); sync();}
+ #endif
++#endif
+ 
+ /* Default block size.  Some systems do not have blocksize in their
+    stat record. This code uses the BSD blocksize from stat. */

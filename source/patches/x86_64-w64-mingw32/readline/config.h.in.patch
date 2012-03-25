@@ -1,0 +1,12 @@
+--- ./config.h.in.orig	2012-03-22 17:33:17.000000000 -0700
++++ ./config.h.in	2012-03-22 17:58:29.000000000 -0700
+@@ -65,6 +65,9 @@
+ /* Define if you have the mbrtowc function. */
+ #undef HAVE_MBRTOWC
+ 
++/* Define if you have the mbrtowc function. */
++#undef HAVE_MBRTOWC
++
+ /* Define if you have the mbsrtowcs function. */
+ #undef HAVE_MBSRTOWCS
+ 

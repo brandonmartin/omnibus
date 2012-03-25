@@ -1,0 +1,11 @@
+--- ./examples/excallback.c.orig	2012-03-22 17:33:16.000000000 -0700
++++ ./examples/excallback.c	2012-03-22 17:58:29.000000000 -0700
+@@ -157,7 +157,7 @@
+     fprintf(stderr, "|%s|\n", line);
+   }
+ 
+-  free (line);
++  rl_free (line);
+ }
+ 
+ int

@@ -1,0 +1,13 @@
+--- ./history.c.orig	2012-03-22 17:33:17.000000000 -0700
++++ ./history.c	2012-03-22 17:58:29.000000000 -0700
+@@ -248,7 +248,9 @@
+   char ts[64], *ret;
+ 
+   t = (time_t) time ((time_t *)0);
+-#if defined (HAVE_VSNPRINTF)		/* assume snprintf if vsnprintf exists */
++#if defined(_WIN32)
++  _snprintf (ts, sizeof (ts) - 1, "X%lu", (unsigned long) t);
++#elif defined (HAVE_VSNPRINTF)		/* assume snprintf if vsnprintf exists */
+   snprintf (ts, sizeof (ts) - 1, "X%lu", (unsigned long) t);
+ #else
+   sprintf (ts, "X%lu", (unsigned long) t);

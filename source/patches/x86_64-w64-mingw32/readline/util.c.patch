@@ -1,0 +1,20 @@
+--- ./util.c.orig	2012-03-22 17:33:17.000000000 -0700
++++ ./util.c	2012-03-22 17:58:29.000000000 -0700
+@@ -275,7 +275,7 @@
+ }
+ #endif
+ 
+-#if !defined (HAVE_STRCASECMP)
++#if !defined (HAVE_STRCASECMP) && !defined (_WIN32)
+ /* Compare at most COUNT characters from string1 to string2.  Case
+    doesn't matter. */
+ int
+@@ -313,7 +313,7 @@
+     }
+   return (*string1 - *string2);
+ }
+-#endif /* !HAVE_STRCASECMP */
++#endif /* !HAVE_STRCASECMP && !_WIN32 */
+ 
+ /* Stupid comparison routine for qsort () ing strings. */
+ int

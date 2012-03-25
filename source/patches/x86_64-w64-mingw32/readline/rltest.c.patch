@@ -1,0 +1,11 @@
+--- ./examples/rltest.c.orig	2012-03-22 17:33:16.000000000 -0700
++++ ./examples/rltest.c	2012-03-22 17:58:29.000000000 -0700
+@@ -87,7 +87,7 @@
+ 		fprintf (stderr, "%d: %s\r\n", i, list[i]->line);
+ 	    }
+ 	}
+-      free (temp);
++      rl_free (temp);
+     }
+   exit (0);
+ }

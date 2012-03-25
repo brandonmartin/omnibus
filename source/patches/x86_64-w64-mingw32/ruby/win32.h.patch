@@ -1,0 +1,37 @@
+--- include/ruby/win32.h.orig	2012-03-25 14:01:29.000000000 -0700
++++ include/ruby/win32.h	2012-03-25 14:10:19.000000000 -0700
+@@ -173,13 +173,18 @@
+ 
+ #if SIZEOF_OFF_T == 8
+ #define off_t __int64
++#ifdef stat
++#undef stat
++#endif
+ #define stat stati64
+ #define fstat(fd,st)		_fstati64(fd,st)
+ #if defined(__BORLANDC__)
+ #define stati64(path, st) rb_w32_stati64(path, st)
+ #elif !defined(_MSC_VER) || RT_VER < 80
+ #define stati64 _stati64
++#ifndef _stati64
+ #define _stati64(path, st) rb_w32_stati64(path, st)
++#endif
+ #else
+ #define stati64 _stat64
+ #define _stat64(path, st) rb_w32_stati64(path, st)
+@@ -368,13 +373,14 @@
+ //
+ // define this so we can do inplace editing
+ //
+-
++#ifndef __MINGW32__
+ #define SUFFIX
+ #define ftruncate rb_w32_ftruncate
+ extern int       truncate(const char *path, off_t length);
+ extern int       ftruncate(int fd, off_t length);
+ extern int       fseeko(FILE *stream, off_t offset, int whence);
+ extern off_t     ftello(FILE *stream);
++#endif
+ 
+ //
+ // stubs

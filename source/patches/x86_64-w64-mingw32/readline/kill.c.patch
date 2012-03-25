@@ -1,0 +1,11 @@
+--- ./kill.c.orig	2012-03-22 17:33:17.000000000 -0700
++++ ./kill.c	2012-03-22 17:58:29.000000000 -0700
+@@ -657,7 +657,7 @@
+ }
+ 
+ /* A special paste command for users of Cygnus's cygwin32. */
+-#if defined (__CYGWIN__)
++#if defined (__CYGWIN__) || defined (_WIN32)
+ #include <windows.h>
+ 
+ int

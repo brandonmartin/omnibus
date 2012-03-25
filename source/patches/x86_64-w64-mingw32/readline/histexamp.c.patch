@@ -1,0 +1,29 @@
+--- ./examples/histexamp.c.orig	2012-03-22 17:33:16.000000000 -0700
++++ ./examples/histexamp.c	2012-03-22 17:58:29.000000000 -0700
+@@ -67,13 +67,13 @@
+ 
+ 	  if (result < 0 || result == 2)
+ 	    {
+-	      free (expansion);
++	      rl_free (expansion);
+ 	      continue;
+ 	    }
+ 
+ 	  add_history (expansion);
+ 	  strncpy (line, expansion, sizeof (line) - 1);
+-	  free (expansion);
++	  rl_free (expansion);
+ 	}
+ 
+       if (strcmp (line, "quit") == 0)
+@@ -111,8 +111,8 @@
+ 		fprintf (stderr, "No such entry %d\n", which);
+ 	      else
+ 		{
+-		  free (entry->line);
+-		  free (entry);
++		  rl_free (entry->line);
++		  rl_free (entry);
+ 		}
+ 	    }
+ 	  else

@@ -1,0 +1,10 @@
+--- Configure.orig	2012-03-24 14:18:44.000000000 -0700
++++ Configure	2012-03-24 14:29:50.000000000 -0700
+@@ -1082,6 +1082,7 @@
+ 			$openssl_other_defines .= "#define OPENSSL_NO_$ALGO\n";
+ 			print " OPENSSL_NO_$ALGO";
+ 		
++			if (/^hw$/)	{ $flags .= "-DOPENSSL_NO_HW "; }
+ 			if (/^err$/)	{ $flags .= "-DOPENSSL_NO_ERR "; }
+ 			elsif (/^asm$/)	{ $no_asm = 1; }
+ 			}

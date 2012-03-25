@@ -1,0 +1,33 @@
+--- ./examples/rl-fgets.c.orig	2012-03-22 17:33:16.000000000 -0700
++++ ./examples/rl-fgets.c	2012-03-22 17:58:29.000000000 -0700
+@@ -336,26 +336,26 @@
+     ) ;
+     if ( ! strncmp(my_fgets_line, "_fgets_reset_", 13) ) {
+       my_fgets_reset () ;
+-      free ( my_fgets_line ) ;
++      rl_free ( my_fgets_line ) ;
+       strcpy ( s, "\n" ) ;
+       return ( s ) ;
+     }
+     if ( ! strncmp(my_fgets_line, "_fgets_dump_", 12) ) {
+       my_fgets_dump () ;
+-      free ( my_fgets_line ) ;
++      rl_free ( my_fgets_line ) ;
+       strcpy ( s, "\n" ) ;
+       return ( s ) ;
+     }
+     if ( ! strncmp(my_fgets_line, "_fgets_debug_", 13) ) {
+       my_fgets_debug_toggle () ;
+-      free ( my_fgets_line ) ;
++      rl_free ( my_fgets_line ) ;
+       strcpy ( s, "\n" ) ;
+       return ( s ) ;
+     }
+     (void) strncpy ( s, my_fgets_line, n-1 ) ;
+     (void) strcat ( s, "\n" ) ;
+     if ( *my_fgets_line ) add_history ( my_fgets_line ) ;
+-    free ( my_fgets_line ) ;
++    rl_free ( my_fgets_line ) ;
+     return ( s ) ;
+   } else {
+     static fgets_t _fgets ;

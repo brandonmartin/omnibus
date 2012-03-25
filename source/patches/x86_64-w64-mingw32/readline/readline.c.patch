@@ -1,0 +1,36 @@
+--- ./readline.c.orig	2012-03-22 17:33:17.000000000 -0700
++++ ./readline.c	2012-03-22 17:58:29.000000000 -0700
+@@ -1174,8 +1174,9 @@
+   sp->macro = rl_executing_macro;
+ 
+   sp->catchsigs = rl_catch_signals;
++#ifdef SIGWINCH
+   sp->catchsigwinch = rl_catch_sigwinch;
+-
++#endif /* SIGWINCH */
+   return (0);
+ }
+ 
+@@ -1208,7 +1209,22 @@
+   rl_executing_macro = sp->macro;
+ 
+   rl_catch_signals = sp->catchsigs;
++#ifdef SIGWINCH
+   rl_catch_sigwinch = sp->catchsigwinch;
++#endif /* SIGWINCH */
+ 
+   return (0);
+ }
++
++/* Free the buffer returned by readline(), the buffer passed as the
++   parameter to lhandler function installed by rl_callback_handler_install()
++   and buffers allocated by readline library functions.
++   Use this funtion instead of free().
++   This function MUST be used instead free() if readline is linked as
++   DLL on WIN32 */
++void
++rl_free (buff)
++     void *buff;
++{
++  free(buff);
++}

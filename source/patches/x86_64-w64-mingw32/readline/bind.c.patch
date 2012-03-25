@@ -1,0 +1,34 @@
+--- ./bind.c.orig	2012-03-22 17:33:17.000000000 -0700
++++ ./bind.c	2012-03-22 17:58:29.000000000 -0700
+@@ -53,6 +53,11 @@
+ extern int errno;
+ #endif /* !errno */
+ 
++#ifdef _WIN32
++#include <sys/stat.h>
++#include <io.h>
++#endif
++
+ #include "posixstat.h"
+ 
+ /* System-specific feature definitions and include files. */
+@@ -865,6 +870,19 @@
+   buffer = _rl_read_file (openname, &file_size);
+   free (openname);
+ 
++#if defined (_WIN32) && defined (INITFILES_IN_REGISTRY)
++  if (buffer == 0)
++    {
++      openname = _rl_get_user_registry_string(READLINE_REGKEY,
++                                              INPUTRC_REGVAL);
++      if (openname)
++        {
++          buffer = _rl_read_file (openname, &file_size);
++          free (openname);
++        }
++    }
++#endif	/* _WIN32 */
++
+   if (buffer == 0)
+     return (errno);
+   
