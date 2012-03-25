@@ -22,6 +22,9 @@
        (and (is-os? "darwin") (is-machine? "x86_64"))
        { "CFLAGS" "-arch x86_64 -m64 -L/opt/opscode/embedded/lib -I/opt/opscode/embedded/include"
          "LDFLAGS" "-arch x86_64 -R/opt/opscode/embedded/lib -L/opt/opscode/embedded/lib -I/opt/opscode/embedded/include"}
+       omnibus.cross/crosscompiling?
+       { "CFLAGS" "-L/opt/opscode/embedded/lib -I/opt/opscode/embedded/include"
+         "LDFLAGS" "-Wl,-rpath /opt/opscode/embedded/lib -L/opt/opscode/embedded/lib -I/opt/opscode/embedded/include"}
        (is-os? "linux")
        { "CFLAGS" "-L/opt/opscode/embedded/lib -I/opt/opscode/embedded/include"
          "LDFLAGS" "-Wl,-rpath /opt/opscode/embedded/lib -L/opt/opscode/embedded/lib -I/opt/opscode/embedded/include"}
@@ -30,6 +33,21 @@
          "LDFLAGS" "-R/opt/opscode/embedded/lib -L/opt/opscode/embedded/lib -I/opt/opscode/embedded/include"}
        )
       ]
+(let [args (cond
+            omnibus.cross/crosscompiling?
+             ["--prefix=/opt/opscode/embedded"
+              (str "--host=" omnibus.cross/*omnibus-cross-host*)
+              "--with-opt-dir=/opt/opscode/embedded"
+              "--enable-shared"
+              "--disable-install-doc"]
+            true
+             ["--prefix=/opt/opscode/embedded"
+              "--with-opt-dir=/opt/opscode/embedded"
+              "--enable-shared"
+              "--disable-install-doc"])
+     ]
+
+
   (software "ruby"
             :source "ruby-1.9.2-p180"
             :steps [
@@ -38,9 +56,6 @@
                      }
                     {:env env
                      :command "./configure"
-                     :args ["--prefix=/opt/opscode/embedded"
-                            "--with-opt-dir=/opt/opscode/embedded"
-                            "--enable-shared"
-                            "--disable-install-doc"]}
+                     :args args }
                     {:env env :command "make"}
-                    {:command "make" :args ["install"]}]))
+                    {:command "make" :args ["install"]}])))

@@ -17,6 +17,22 @@
 ;; limitations under the License.
 ;;
 
+(let [args (cond
+            omnibus.cross/crosscompiling?
+             ["--prefix=/opt/opscode/embedded"
+              (str "--host=" omnibus.cross/*omnibus-cross-host*)
+;; TODO we'd have to build gcrypt for this (and WILLDO)
+              "--without-crypto"
+              "--with-libxml-prefix=/opt/opscode/embedded"
+              "--with-libxml-include-prefix=/opt/opscode/embedded/include"
+              "--with-libxml-libs-prefix=/opt/opscode/embedded/lib"]
+            true
+             ["--prefix=/opt/opscode/embedded"
+              "--with-libxml-prefix=/opt/opscode/embedded"
+              "--with-libxml-include-prefix=/opt/opscode/embedded/include"
+              "--with-libxml-libs-prefix=/opt/opscode/embedded/lib"])
+     ]
+
 (software "libxslt" :source "libxslt-1.1.26"
           :steps [{:env {"LDFLAGS" "-L/opt/opscode/embedded/lib -I/opt/opscode/embedded/include"
                          "CFLAGS" "-L/opt/opscode/embedded/lib -I/opt/opscode/embedded/include"
@@ -25,13 +41,23 @@
                                   "true"
                                   true
                                   "./autogen.sh")
-                   :args ["--prefix=/opt/opscode/embedded" "--with-libxml-prefix=/opt/opscode/embedded"
-                          "--with-libxml-include-prefix=/opt/opscode/embedded/include"
-                          "--with-libxml-libs-prefix=/opt/opscode/embedded/lib"]}
+                   :args args }
+;; probably due to outdated mingw autoheader (whats new) it comes up without snprintf
+;; so patch it back in to config.h for now
+                  {:command (if omnibus.cross/crosscompiling? "patch" "true")
+                   :args ["-p0" "-i" (str omnibus.core/*omnibus-patch-dir* "/"
+                                      omnibus.cross/*omnibus-cross-host*
+                                      "/libxslt/config.h.in.patch")]}
+;; mkdir is back to one argument in mingw-w64 (heh)
+;; could probably be replaced with a macro
+                  {:command (if omnibus.cross/crosscompiling? "patch" "true")
+                   :args ["-p0" "-i" (str omnibus.core/*omnibus-patch-dir* "/"
+                                      omnibus.cross/*omnibus-cross-host*
+                                      "/libxslt/security.c.patch")]}
                   {:command (if (is-os? "solaris2") "perl" "true")
                    :args [ "-pi" "-e" "s/^(LIBXSLT_VERSION_SCRIPT = \\$.+)/\\# Woof/g"
                            (str *omnibus-build-dir* "/libxslt-1.1.26/libxslt/Makefile") ]}
                   {:command (if (is-os? "solaris2") "perl" "true")
                    :args [ "-pi" "-e" "s/^(#LIBXSLT_VERSION_SCRIPT.+)/LIBXSLT_VERSION_SCRIPT =/g" 
                            (str *omnibus-build-dir* "/libxslt-1.1.26/libxslt/Makefile") ]}
-                  {:env {"LD_RUN_PATH" "/opt/opscode/embedded/lib"} :command "make" :args ["install"]}])
+                  {:env {"LD_RUN_PATH" "/opt/opscode/embedded/lib"} :command "make" :args ["install"]}]))

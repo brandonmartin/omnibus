@@ -17,10 +17,18 @@
 ;; limitations under the License.
 ;;
 
+(let [args (cond
+            omnibus.cross/crosscompiling?
+             ["--prefix=/opt/opscode/embedded"
+              (str "--host=" omnibus.cross/*omnibus-cross-host*) ]
+            true
+             ["--prefix=/opt/opscode/embedded"])
+     ]
+
 (software "libiconv" :source "libiconv-1.13.1"
           :steps [{:env {"CFLAGS" "-L/opt/opscode/embedded/lib -I/opt/opscode/embedded/include" "LD_RUN_PATH" "/opt/opscode/embedded/lib"}
-                   :command "./configure" :args ["--prefix=/opt/opscode/embedded"]}
+                   :command "./configure" :args args}
                   {:env {"CFLAGS" "-L/opt/opscode/embedded/lib -I/opt/opscode/embedded/include" "LD_RUN_PATH" "/opt/opscode/embedded/lib"}
                    :command "make"}
                   {:command "make"
-                   :args ["install"]}])
+                   :args ["install"]}]))

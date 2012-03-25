@@ -17,8 +17,41 @@
 ;; limitations under the License.
 ;;
 
+(let [args (cond
+            omnibus.cross/crosscompiling?
+             ["--prefix=/opt/opscode/embedded"
+              (str "--host=" omnibus.cross/*omnibus-cross-host*) ]
+            true
+             ["--prefix=/opt/opscode/embedded"])
+     ]
+
 (software "gdbm" :source "gdbm-1.8.3"
-          :steps [{:command "/opt/opscode/embedded/bin/autoconf"}
-                  {:command "./configure" :args ["--prefix=/opt/opscode/embedded"]}
+          :steps [
+                ;;  {:command (if omnibus.cross/crosscompiling? "patch" "true")
+                ;;  :args ["-p0" "-i" (str omnibus.core/*omnibus-patch-dir* "/"
+                ;;                          omnibus.cross/*omnibus-cross-host*
+                ;;                          "/gdbm/Makefile.in.patch")]}
+                  {:command (if omnibus.cross/crosscompiling? "patch" "true")
+                   :args ["-p0" "-i" (str omnibus.core/*omnibus-patch-dir* "/"
+                                          omnibus.cross/*omnibus-cross-host*
+                                          "/gdbm/dbminit.c.patch")]}
+                  {:command (if omnibus.cross/crosscompiling? "patch" "true")
+                   :args ["-p0" "-i" (str omnibus.core/*omnibus-patch-dir* "/"
+                                          omnibus.cross/*omnibus-cross-host*
+                                          "/gdbm/dbmopen.c.patch")]}
+                  {:command (if omnibus.cross/crosscompiling? "patch" "true")
+                   :args ["-p0" "-i" (str omnibus.core/*omnibus-patch-dir* "/"
+                                          omnibus.cross/*omnibus-cross-host*
+                                          "/gdbm/gdbmopen.c.patch")]}
+                  {:command (if omnibus.cross/crosscompiling? "patch" "true")
+                   :args ["-p0" "-i" (str omnibus.core/*omnibus-patch-dir* "/"
+                                          omnibus.cross/*omnibus-cross-host*
+                                          "/gdbm/gdbmreorg.c.patch")]}
+                  {:command (if omnibus.cross/crosscompiling? "patch" "true")
+                   :args ["-p0" "-i" (str omnibus.core/*omnibus-patch-dir* "/"
+                                          omnibus.cross/*omnibus-cross-host*
+                                          "/gdbm/systems.h.patch")]}
+                  {:command "/opt/opscode/embedded/bin/autoconf"}
+                  {:command "./configure" :args args}
                   {:command "make" :args ["BINOWN=root" "BINGRP=wheel"]}
-                  {:command "make" :args ["install"]}])
+                  {:command "make" :args ["install"]}]))

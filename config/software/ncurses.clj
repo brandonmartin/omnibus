@@ -29,12 +29,26 @@
             "LDFLAGS" "-Wl,-rpath /opt/opscode/embedded/lib -L/opt/opscode/embedded/lib -I/opt/opscode/embedded/include"
             "CFLAGS" "-I/opt/opscode/embedded/include -L/opt/opscode/embedded/lib"
             })]
+(let [args (cond
+            omnibus.cross/crosscompiling?
+             ["--prefix=/opt/opscode/embedded"
+              (str "--host=" omnibus.cross/*omnibus-cross-host*)
+              "--without-shared"
+              "--enable-term-driver"
+              "--enable-sp-funcs"
+              "--without-debug"]
+            true
+             ["--prefix=/opt/opscode/embedded"
+              "--with-shared"
+              "--without-debug"])
+     ]
+
 (software "ncurses" :source "ncurses-5.7"
-          :steps [ {
-		   :env {"LD_RUN_PATH" "/opt/opscode/embedded/lib"} 
+          :steps [{
+		               :env {"LD_RUN_PATH" "/opt/opscode/embedded/lib"}
                    :command "./configure"
-                   :args ["--prefix=/opt/opscode/embedded" "--with-shared" "--without-debug"]}
+                   :args args }
                   {:env {"LD_RUN_PATH" "/opt/opscode/embedded/lib"} :command "make"}
                   {:env {"LD_RUN_PATH" "/opt/opscode/embedded/lib"} :command "make" :args ["install"]}])
 
-)
+))

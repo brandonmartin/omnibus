@@ -17,8 +17,26 @@
 ;; limitations under the License.
 ;;
 
+
+(let [args (cond
+            omnibus.cross/crosscompiling?
+             ["--prefix=/opt/opscode/embedded"
+              "--enable-mingw"
+              (str "--host=" omnibus.cross/*omnibus-cross-host*) ]
+            true
+             ["--prefix=/opt/opscode/embedded"])
+     ]
+
 (software "db" :source "db-5.0.26.NC"
                :build-subdir "build_unix"
-               :steps [{:command "../dist/configure" :args ["--prefix=/opt/opscode/embedded"]}
+               :steps [
+                       {:command (if omnibus.cross/crosscompiling? "patch" "true")
+                        :args ["-d" "../dist" 
+                               "-p0" "-i" (str omnibus.core/*omnibus-patch-dir* "/"
+                                           omnibus.cross/*omnibus-cross-host*
+                                           "/db/Makefile.in.patch")]}
+
+                       {:command "../dist/configure" 
+                        :args args }
                        {:command "make"}
-                       {:command "make" :args ["install"]}])
+                       {:command "make" :args ["install"]}]))

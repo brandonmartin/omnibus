@@ -43,6 +43,23 @@
                                        "-I/opt/opscode/embedded/include"
                                        "-R/opt/opscode/embedded/lib"]
                                }
+                              omnibus.cross/crosscompiling?
+                              {
+                                :env {"LD_RUN_PATH" "/opt/opscode/embedded/lib"
+                                      "CC" (str omnibus.cross/*omnibus-cross-host* "-gcc")
+                                      "LD" (str omnibus.cross/*omnibus-cross-host* "-ld")
+                                      "AR" (str omnibus.cross/*omnibus-cross-host* "-ranlib") 
+                                      "RANLIB" (str omnibus.cross/*omnibus-cross-host* "-ar")}
+                                :command "./Configure"
+                                :args ["--prefix=/opt/opscode/embedded"
+                                       "--with-zlib-lib=/opt/opscode/embedded/lib"
+                                       "--with-zlib-include=/opt/opscode/embedded/include"
+                                       "zlib"
+                                       "shared"
+                                       "mingw64"
+                                       "-L/opt/opscode/embedded/lib"
+                                       "-I/opt/opscode/embedded/include"]
+                               }
                               true
                               {
                                 :env {"LD_RUN_PATH" "/opt/opscode/embedded/lib"}

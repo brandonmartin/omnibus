@@ -28,17 +28,35 @@
             "LDFLAGS" "-Wl,-rpath /opt/opscode/embedded/lib -L/opt/opscode/embedded/lib -I/opt/opscode/embedded/include"
             "CFLAGS" "-I/opt/opscode/embedded/include -L/opt/opscode/embedded/lib"
             })]
+;; PATH=/opt/mingw-w64/bin:$PATH make PREFIX=x86_64-w64-mingw32- -f win32/Makefile.gcc
   (software "zlib"
             :source "zlib-1.2.5"
-            :steps [
+            :steps (if omnibus.cross/crosscompiling? 
+                     [{:command "make"
+                       :args [ (str "PREFIX=" omnibus.cross/*omnibus-cross-host* "-")
+                              "-f" "win32/Makefile.gcc" ]}
+                      {:command "cp"
+                       :args [ "-iv" "zlib1.dll" 
+                               "/opt/opscode/embedded/bin" ]}
+                      {:command "cp"
+                       :args [ "-iv" "zconf.h" "zlib.h"
+                               "/opt/opscode/embedded/include" ]}
+                      {:command "cp"
+                       :args [ "-iv" "libz.a"
+                               "/opt/opscode/embedded/lib" ]}
+                      {:command "cp"
+                       :args [ "-iv" "libzdll.a"
+                               "/opt/opscode/embedded/lib/libz.dll.a" ]}
+                     ] 
+                     [
                     {
                      :command "./configure"
                      :env env
-                     :args ["--prefix=/opt/opscode/embedded"]
+                     :args [ "--prefix=/opt/opscode/omnibus" ]
                      }
                     { :command "make" }
                     { :command "make" :args ["install"]}
-                    ]))
+                    ])))
 
 
 

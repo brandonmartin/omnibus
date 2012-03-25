@@ -17,14 +17,22 @@
 ;; limitations under the License.
 ;;
 
+(let [args (cond
+            omnibus.cross/crosscompiling?
+             ["--prefix=/opt/opscode/embedded"
+              (str "--host=" omnibus.cross/*omnibus-cross-host*) ]
+            true
+             ["--prefix=/opt/opscode/embedded"])
+     ]
+
 (software "help2man"
     :source "help2man-1.40.4"
     :steps [
 	    {
 	     :command "./configure"
-	     :args ["--prefix=/opt/opscode/embedded"]
+	     :args args
 	     }
 	    { :command (if (or (is-os? "solaris2") (is-os? "freebsd")) "gmake" "make") }
 	    { :command (if (or (is-os? "solaris2") (is-os? "freebsd")) "gmake" "make") :args ["install"]}
-	    ])
+	    ]))
 

@@ -17,12 +17,20 @@
 ;; limitations under the License.
 ;;
 
+(let [args (cond
+            omnibus.cross/crosscompiling?
+             ["--prefix=/opt/opscode/embedded"
+              (str "--host=" omnibus.cross/*omnibus-cross-host*) ]
+            true
+             ["--prefix=/opt/opscode/embedded"])
+     ]
+
 (software "autoconf" :source "autoconf-2.63"
           :steps [{
                    :env {"LDFLAGS" "-R/opt/opscode/embedded/lib -L/opt/opscode/embedded/lib -I/opt/opscode/embedded/include"
                          "CFLAGS" "-L/opt/opscode/embedded/lib -I/opt/opscode/embedded/include"}
                    :command "./configure"
-                   :args ["--prefix=/opt/opscode/embedded"]
+                   :args args
                    }
                   {:command "make"}
-                  {:command "make" :args ["install"]}])
+                  {:command "make" :args ["install"]}]))
