@@ -43,11 +43,13 @@
                                   "./autogen.sh")
                    :args args }
 ;; probably due to outdated mingw autoheader (whats new) it comes up without snprintf
-;; so patch it back in to config.h for now
+;; so patch it back in to config.status for now
                   {:command (if omnibus.cross/crosscompiling? "patch" "true")
                    :args ["-p0" "-i" (str omnibus.core/*omnibus-patch-dir* "/"
                                       omnibus.cross/*omnibus-cross-host*
-                                      "/libxslt/config.h.in.patch")]}
+                                      "/libxslt/config.status.patch")]}
+                  {:command (if omnibus.cross/crosscompiling? "make" "true")
+                   :args ["config.h"]}
 ;; mkdir is back to one argument in mingw-w64 (heh)
 ;; could probably be replaced with a macro
                   {:command (if omnibus.cross/crosscompiling? "patch" "true")

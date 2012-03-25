@@ -1,0 +1,10 @@
+--- config.status.orig	2012-03-25 16:19:41.000000000 -0700
++++ config.status	2012-03-25 16:20:31.000000000 -0700
+@@ -1052,6 +1052,7 @@
+ D["HAVE_FTIME"]=" 1"
+ D["HAVE_PRINTF"]=" 1"
+ D["HAVE_SPRINTF"]=" 1"
++D["HAVE_SNPRINTF"]=" 1"
+ D["HAVE_FPRINTF"]=" 1"
+ D["HAVE_VFPRINTF"]=" 1"
+ D["HAVE_VSPRINTF"]=" 1"
