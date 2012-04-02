@@ -1,0 +1,13 @@
+--- tool/mkconfig.rb.orig	2012-03-30 14:04:40.000000000 -0700
++++ tool/mkconfig.rb	2012-03-30 14:04:56.000000000 -0700
+@@ -29,8 +29,8 @@
+ # changes made to this file will be lost the next time ruby is built.
+ 
+ module RbConfig
+-  RUBY_VERSION == "#{version}" or
+-    raise "ruby lib version (#{version}) doesn't match executable version (\#{RUBY_VERSION})"
++#  RUBY_VERSION == "#{version}" or
++#    raise "ruby lib version (#{version}) doesn't match executable version (\#{RUBY_VERSION})"
+ 
+ ]
+ 

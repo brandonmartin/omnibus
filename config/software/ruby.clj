@@ -39,7 +39,8 @@
               (str "--host=" omnibus.cross/*omnibus-cross-host*)
               "--with-opt-dir=/opt/opscode/embedded"
               "--enable-shared"
-              "--disable-install-doc"]
+              "--disable-install-doc"
+              "DLDFLAGS=-Wl,--export-all-symbols"]
             true
              ["--prefix=/opt/opscode/embedded"
               "--with-opt-dir=/opt/opscode/embedded"
@@ -50,12 +51,24 @@
 
   (software "ruby"
             :source "ruby-1.9.2-p180"
-            :steps [
+            :steps [{:command (if omnibus.cross/crosscompiling? "patch" "true")
+                     :args ["-p0" "-i" (str omnibus.core/*omnibus-patch-dir* "/"
+                                        omnibus.cross/*omnibus-cross-host*
+                                        "/ruby/win32.h.patch")]}
+                    {:command (if omnibus.cross/crosscompiling? "patch" "true")
+                     :args ["-p0" "-i" (str omnibus.core/*omnibus-patch-dir* "/"
+                                        omnibus.cross/*omnibus-cross-host*
+                                        "/ruby/mkconfig.rb.patch")]}
+
                     {:env env
                      :command "/opt/opscode/embedded/bin/autoconf"
                      }
                     {:env env
                      :command "./configure"
                      :args args }
-                    {:env env :command "make"}
-                    {:command "make" :args ["install"]}])))
+                    {:env env
+                     :command (if (is-os? "freebsd") "gmake" "make")}
+                    {:env env
+                     :command (if (is-os? "freebsd") "gmake" "make")
+                     :args ["install"]}
+                    ])))
