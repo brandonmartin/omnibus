@@ -33,13 +33,18 @@
 
 (software "mingw-w64-cross-binutils"
     :source "binutils-2.22"
-    :build-subdir "build"
     :steps [
-	    {
-	     :command "../configure"
-	     :args args
-	     }
-	    { :command "gmake" }
-	    { :command "gmake" :args ["install"]}
+           { :command "sh"
+             :args [ "-c" "mkdir build" ]}
+	         { :command "sh"
+	           :args [ "-c" (str "cd build && ../configure --prefix=" omnibus.cross/*omnibus-cross-path* " --with-sysroot=" omnibus.cross/*omnibus-cross-path* " --target=" omnibus.cross/*omnibus-cross-host* " --disable-multilib CC=gcc42 CXX=g++42") ]
+	         }
+            { :command "sh"
+              :args [ "-c" "cd build && gmake" ]}
+            { :command "sh"
+              :args [ "-c" "cd build && gmake install" ]}
+
+;;	    { :command "gmake" }
+;;	    { :command "gmake" :args ["install"]}
 	    ]))
 
