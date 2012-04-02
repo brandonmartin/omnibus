@@ -6,7 +6,8 @@ echo "Starting omnibus build of $1"
 
 export LEIN_ROOT=true
 export CROSS_HOST=x86_64-w64-mingw32
-export CROSS_BIN=/opt/mingw-w64/bin
+export CROSS_PATH=/opt/mingw-w64-opscode
+export CROSS_BIN=${CROSS_PATH}/bin
 #export PATH=/opt/opscode/embedded/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/gnu/bin:/usr/sfw/bin:/usr/gcc/4.3/bin:/var/ruby/1.8/gem_home/bin
 export PATH=${CROSS_BIN}:/opt/opscode/embedded/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/gnu/bin:/usr/sfw/bin:/usr/gcc/4.3/bin:/var/ruby/1.8/gem_home/bin
 #cd /root/omnibus

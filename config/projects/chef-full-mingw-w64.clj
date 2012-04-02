@@ -17,6 +17,6 @@
 ;; limitations under the License.
 ;;
 
-(project "chef-full-mingw" "0.10.8" "2"
+(project "chef-full-mingw-w64" "0.10.8" "2"
          :build-order [ "prep" "help2man" "libtool" "autoconf" "automake" "gdbm" "zlib" "libiconv" "termcap" "readline" "db" "ncurses59"
                         "openssl101" "libxml2" "libxslt" "ruby" "rsync" "chef" ])

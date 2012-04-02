@@ -17,17 +17,12 @@
 ;; limitations under the License.
 ;;
 
-(ns omnibus.cross
-  (:use [omnibus.log]
-        [omnibus.core]
-        [clojure.java.shell :only [sh]]
-        [clojure.contrib.io :only [make-parents file-str]] )
-  (:require [clojure.contrib.string :as str])
-  (:gen-class))
-  
-(def *omnibus-cross-host* (get (System/getenv) "CROSS_HOST"))
-(def *omnibus-cross-path* (get (System/getenv) "CROSS_PATH"))
-(def *omnibus-cross-bin* (get (System/getenv) "CROSS_BIN"))
-
-(def crosscompiling? (not (= nil (get (System/getenv) "CROSS_HOST"))))
+(project "mingw-w64-cross-env" "1.0.1" "1"
+         :build-order [ "mingw-w64-cross-prep"
+                        "mingw-w64-cross-binutils"
+                        "mingw-w64-cross-headers"
+                        "mingw-w64-cross-gcc-stage1"
+                        "mingw-w64-cross-crt"
+                        "mingw-w64-cross-gcc"
+                      ])
 
